@@ -28,7 +28,7 @@ jobs:
         if: always()
         with:
           ref: gh-pages
-          path: gh-pages-dir
+          path: allure-history
 
       - name: Generate Allure Report
         uses: simple-elf/allure-report-action@master
