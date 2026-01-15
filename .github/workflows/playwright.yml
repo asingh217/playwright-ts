@@ -39,6 +39,65 @@ jobs:
           gh_pages: gh-pages-dir
           keep_reports: 20 # Number of historical reports to keep
 
+      - name: Generate Custom Dashboard Index
+        if: always()
+        run: |
+          run: |
+          cd allure-history
+          
+          # Start building the HTML file with CSS for the table
+          cat <<EOF > index.html
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>QA Test History</title>
+              <style>
+                  body { font-family: -apple-system, Sans-Serif; margin: 40px; background: #f6f8fa; }
+                  h1 { color: #24292f; }
+                  table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                  th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+                  th { background-color: #2da44e; color: white; }
+                  tr:hover { background-color: #f1f1f1; }
+                  .link-btn { 
+                      text-decoration: none; background: #0969da; color: white; 
+                      padding: 5px 10px; border-radius: 4px; font-size: 0.9em; 
+                  }
+              </style>
+          </head>
+          <body>
+              <h1>Playwright Test Reports</h1>
+              <table>
+                  <thead>
+                      <tr>
+                          <th>S.No</th>
+                          <th>Timestamp</th>
+                          <th>Report Link</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+          EOF
+
+          # Counter for S.No (Serial Number)
+          serial_no=1
+
+          # Loop through folders that are numbers only, sort numerically descending
+          # This ensures the latest build is always at the top
+          for build_dir in $(ls -d [0-9]*/ | sed 's/\///' | sort -rn); do
+              # Get timestamp of the folder
+              timestamp=$(stat -c %y "$build_dir" | cut -d'.' -f1)
+              
+              echo "<tr>
+                      <td>$serial_no</td>
+                      <td>$timestamp</td>
+                      <td><a href='./$build_dir/' class='link-btn'>View Allure Report</a></td>
+                    </tr>" >> index.html
+              
+              # Increment S.No
+              serial_no=$((serial_no + 1))
+          done
+
+          echo "</tbody></table></body></html>" >> index.html
+
       - name: Deploy report to Github Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v3
