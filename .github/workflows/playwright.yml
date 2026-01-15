@@ -42,7 +42,6 @@ jobs:
       - name: Generate Custom Dashboard Index
         if: always()
         run: |
-          run: |
           cd allure-history
           
           # Start building the HTML file with CSS for the table
