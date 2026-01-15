@@ -42,8 +42,6 @@ jobs:
       - name: Generate Custom Dashboard Index
         if: always()
         run: |
-          cd allure-history
-          
           # Start building the HTML file with CSS for the table
           cat <<EOF > index.html
           <!DOCTYPE html>
@@ -69,6 +67,7 @@ jobs:
                   <thead>
                       <tr>
                           <th>S.No</th>
+                          <th>Build No.</th>
                           <th>Timestamp</th>
                           <th>Report Link</th>
                       </tr>
@@ -81,12 +80,13 @@ jobs:
 
           # Loop through folders that are numbers only, sort numerically descending
           # This ensures the latest build is always at the top
-          for build_dir in $(ls -d [0-9]*/ | sed 's/\///' | sort -rn); do
+          for build_dir in $(ls -d allure-history[0-9]*/ | sed 's/allure-history\///' | sort -rn); do
               # Get timestamp of the folder
               timestamp=$(stat -c %y "$build_dir" | cut -d'.' -f1)
               
               echo "<tr>
                       <td>$serial_no</td>
+                      <td>$build_dir</td>
                       <td>$timestamp</td>
                       <td><a href='./$build_dir/' class='link-btn'>View Allure Report</a></td>
                     </tr>" >> index.html
@@ -96,6 +96,7 @@ jobs:
           done
 
           echo "</tbody></table></body></html>" >> index.html
+          sudo mv custom_index.html allure-history/index.html
 
       - name: Deploy report to Github Pages
         if: always()
