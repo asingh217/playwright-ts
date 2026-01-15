@@ -96,7 +96,7 @@ jobs:
           done
 
           echo "</tbody></table></body></html>" >> index.html
-          sudo mv custom_index.html allure-history/index.html
+          sudo mv index.html allure-history/index.html -f
 
       - name: Deploy report to Github Pages
         if: always()
