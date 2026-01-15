@@ -80,7 +80,7 @@ jobs:
 
           # Loop through folders that are numbers only, sort numerically descending
           # This ensures the latest build is always at the top
-          for build_dir in $(ls -d allure-history[0-9]*/ | sed 's/allure-history\///' | sort -rn); do
+          for build_dir in $(ls -d allure-history/[0-9]*/ | sed 's/allure-history\///' | sort -rn); do
               # Get timestamp of the folder
               timestamp=$(stat -c %y "$build_dir" | cut -d'.' -f1)
               
